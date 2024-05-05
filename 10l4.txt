@@ -1,0 +1,135 @@
+
+I costrutti noti presenti nell'estratto di codice del malware sono i seguenti:
+
+1. Salvataggio dei registri:
+
+.text:00401000                                    push    ebp
+.text:00401001                                    mov    ebp, esp
+Queste due istruzioni salvano il registro EBP (Base Pointer) nello stack. EBP viene utilizzato per puntare alla base del frame di stack della funzione corrente. Salvare EBP è un'operazione comune all'inizio di una funzione per allocare spazio nello stack per le variabili locali della funzione.
+
+2. Salvataggio dei registri:
+
+.text:00401003                                    push    ecx
+Questa istruzione salva il registro ECX nello stack. ECX è un registro di uso generale che viene spesso utilizzato per contenere valori temporanei o indici di array. Salvare ECX potrebbe essere fatto qui per liberarlo per un altro uso nella funzione.
+
+3. Costanti:
+
+.text:00401004                                    push    0                                                          ; dwReserved
+Questa istruzione spinge il valore 0 sullo stack. Il commento indica che questo valore è una costante denominata "dwReserved". Le costanti sono valori fissi che non cambiano durante l'esecuzione del programma.
+
+4. Indirizzi di memoria:
+
+.text:00401006                                    push    ;                                                             1pdwFlags
+                                                                         ds: InternetGetConnectedState
+Questa istruzione spinge l'indirizzo di memoria della funzione InternetGetConnectedState sullo stack. InternetGetConnectedState è una funzione API di Windows che viene utilizzata per determinare se il computer è connesso a Internet. L'istruzione include anche un commento che indica che questo valore è un puntatore a una variabile denominata "1pdwFlags".
+
+5. Chiamate a funzione:
+
+.text:00401008                                     call
+Questa istruzione chiama la funzione situata all'indirizzo di memoria che è stato spinto sullo stack nell'istruzione precedente. In questo caso, la funzione chiamata è InternetGetConnectedState.
+
+6. Salvataggio dei valori di ritorno:
+
+.text:0040100E                                     mov    [ebp+var_4], eax
+Questa istruzione sposta il valore restituito dalla funzione InternetGetConnectedState nella variabile locale denominata "var_4". La variabile locale è allocata nello stack e il suo indirizzo è calcolato utilizzando il registro EBP e un offset (4 in questo caso).
+
+7. Confronti:
+
+.text:00401011                                    cmp     [ebp+var_4], 8
+Questa istruzione confronta il valore della variabile locale "var_4" con il valore 8. Il confronto viene eseguito bit per bit e il risultato viene memorizzato nel flag di stato del processore.
+
+8. Salti condizionali:
+
+.text:00401015                                    jz      short loc 40102B
+Questa istruzione esegue un salto condizionale all'etichetta loc_40102B se il flag di stato del processore indica che il confronto nell'istruzione precedente è stato uguale (jz sta per "jump if zero"). In altre parole, se il valore di var_4 è uguale a 8, il codice salterà a loc_40102B.
+
+9. Costanti di stringa:
+
+.text:00401017                                    push    offset aSuccess Interne; "Success: Internet Connection\n"
+Questa istruzione spinge l'indirizzo di memoria della stringa "Success: Internet Connection\n" sullo stack. La stringa è memorizzata nella memoria di sola lettura del programma e il suo indirizzo è calcolato utilizzando un offset rispetto a un'etichetta denominata "aSuccess Interne".
+
+10. Chiamate a funzione:
+
+.text:0040101C                                    call    sub_40105F
+Questa istruzione chiama la funzione situata all'indirizzo di memoria che è stato spinto sullo stack nell'istruzione precedente. In questo caso, la funzione chiamata è sub_40105F.
+
+11. Pulizia dello stack:
+
+.text:00401021                                    add     esp, 4
+
+
+
+
+
+Assegnazione:
+
+.text:0040100E                                     mov    [ebp+var_4], eax
+Questa istruzione assegna il valore del registro EAX alla variabile locale var_4.
+
+Operazioni aritmetiche:
+
+.text:00401021                                    add     esp, 4
+Questa istruzione aggiunge il valore 4 al registro ESP. ESP è il puntatore allo stack e viene utilizzato per tenere traccia della parte superiore dello stack. Aggiungere 4 a ESP ha l'effetto di rimuovere quattro valori dallo stack.
+
+2. Ipotizzare la funzionalità (esecuzione ad alto livello)
+Combinando i costrutti identificati, possiamo ipotizzare la seguente funzionalità ad alto livello per questo frammento di codice:
+
+Il codice salva i registri EBP e ECX nello stack.
+Spinge lo valore costante 0 sullo stack.
+Recupera l'indirizzo della funzione InternetGetConnectedState e lo spinge sullo stack.
+Chiama la funzione InternetGetConnectedState e salva il valore di ritorno nella variabile locale var_4.
+Confronta il valore di var_4 con 8.
+Se il valore di var_4 è uguale a 8, il codice spinge l'indirizzo della stringa "Success: Internet Connection\n" sullo stack e chiama la funzione sub_40105F.
+Il codice pulisce lo stack rimuovendo quattro valori.
+In base a questa analisi, è ipotizzabile che il frammento di codice faccia parte di un programma che verifica la connessione internet del computer. Se il computer è connesso a internet, il codice stampa un messaggio di successo.
+
+3. BONUS: Analisi e spiegazione di ogni singola riga di codice
+Spiegazione dettagliata di ogni riga di codice:
+
+.text:00401000                                    push    ebp
+Questa istruzione salva il valore del registro EBP nello stack. EBP è il registro Base Pointer e viene utilizzato per puntare alla base del frame di stack della funzione corrente. Salvare EBP è un'operazione comune all'inizio di una funzione per allocare spazio nello stack per le variabili locali della funzione.
+
+.text:00401001                                    mov    ebp, esp
+Questa istruzione imposta il registro EBP sul valore del registro ESP. ESP è il puntatore allo stack e indica la parte superiore dello stack. Impostare EBP su ESP ha l'effetto di stabilire la base del frame di stack della funzione corrente.
+
+.text:00401003                                    push    ecx
+Questa istruzione salva il valore del registro ECX nello stack. ECX è un registro di uso generale che viene spesso utilizzato per contenere valori temporanei o indici di array. Salvare ECX potrebbe essere fatto qui per liberarlo per un altro uso nella funzione.
+
+.text:00401004                                    push    0                                                          ; dwReserved
+Questa istruzione spinge il valore costante 0 sullo stack. Il commento indica che questo valore è una costante denominata "dwReserved". Le costanti sono valori fissi che non cambiano durante l'esecuzione del programma.
+
+.text:00401006                                    push    ;                                                             1pdwFlags
+                                                                         ds: InternetGetConnectedState
+Questa istruzione esegue due operazioni:
+
+Spinge un valore 0 sullo stack. Questo valore è probabilmente un segnaposto per un flag che verrà utilizzato in seguito.
+Spinge l'indirizzo della funzione InternetGetConnectedState sullo stack. InternetGetConnectedState è una funzione API di Windows che viene utilizzata per determinare se il computer è connesso a Internet. L'istruzione include anche un commento che indica che questo valore è un puntatore a una variabile denominata "1pdwFlags".
+.text:00401008                                     call
+Questa istruzione chiama la funzione situata all'indirizzo che è stato spinto sullo stack nell'istruzione precedente. In questo caso, la funzione chiamata è InternetGetConnectedState.
+
+.text:0040100E                                     mov    [ebp+var_4], eax
+Questa istruzione sposta il valore restituito dalla funzione InternetGetConnectedState nella variabile locale denominata "var_4". La variabile locale è allocata nello stack e il suo indirizzo è calcolato utilizzando il registro EBP e un offset (4 in questo caso). Il valore restituito da InternetGetConnectedState è 0 se il computer è connesso a Internet e 1 se non lo è.
+
+.text:00401011                                    cmp     [ebp+var_4], 8
+Questa istruzione confronta il valore della variabile locale "var_4" con il valore 8. Il confronto viene eseguito bit per bit e il risultato viene memorizzato nel flag di stato del processore.
+
+.text:00401015                                    jz      short loc_40102B
+Questa istruzione esegue un salto condizionale all'etichetta loc_40102B se il flag di stato del processore indica che il confronto nell'istruzione precedente è stato uguale (jz sta per "jump if zero"). In altre parole, se il valore di var_4 è uguale a 8, il codice salterà a loc_40102B. In questo caso, 8 è un valore improbabile da utilizzare per un confronto, quindi è possibile che ci sia un errore di battitura nel codice o che il valore abbia un significato specifico non documentato.
+
+.text:00401017                                    push    offset aSuccess Interne; "Success: Internet Connection\n"
+Questa istruzione spinge l'indirizzo della stringa "Success: Internet Connection\n" sullo stack. La stringa è memorizzata nella memoria di sola lettura del programma e il suo indirizzo è calcolato utilizzando un offset rispetto a un'etichetta denominata "aSuccess Interne".
+
+.text:0040101C                                    call    sub_40105F
+Questa istruzione chiama la funzione situata all'indirizzo di memoria che è stato spinto sullo stack nell'istruzione precedente. In questo caso, la funzione chiamata è sub_40105F. È probabile che questa funzione stampi la stringa "Success: Internet Connection\n" sullo schermo.
+
+.text:00401021                                    add     esp, 4
+Questa istruzione aggiunge il valore 4 al registro ESP. ESP è il puntatore allo stack e viene utilizzato per tenere traccia della parte superiore dello stack. Aggiungere 4 a ESP ha l'effetto di rimuovere quattro valori dallo stack. In questo caso, i quattro valori rimossi sono probabilmente:
+
+Il valore costante 0 spinto nell'istruzione 00401004
+Il valore 0 spinto nell'istruzione 00401006 (segnaposto per il flag)
+L'indirizzo della funzione InternetGetConnectedState spinto nell'istruzione 00401006
+L'indirizzo della stringa "Success: Internet Connection\n" spinto nell'istruzione 00401017
+Note aggiuntive
+Il codice utilizza la convenzione di chiamata cdecl, in cui i parametri vengono passati sullo stack e il valore di ritorno viene restituito nel registro EAX.
+Il codice non include alcuna gestione degli errori. Se la funzione InternetGetConnectedState fallisce, il codice continuerà l'esecuzione come se non fosse successo nulla.
+Il codice è scritto in assembly x86 a 32 bit..
